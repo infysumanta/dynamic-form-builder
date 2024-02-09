@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PreviewDialogBtn from "./preview-dialog-btn";
 import SaveFormBtn from "./save-form-btn";
 import PublishFormBtn from "./publish-form-btn";
@@ -13,11 +13,14 @@ import {
 } from "@dnd-kit/core";
 import DragOverlayWrappper from "./drag-overlay-wrappper";
 import useDesigner from "./hooks/useDesigner";
+import { ImSpinner2 } from "react-icons/im";
+import { formData } from "@/lib/formData";
+import { FormElementInstance } from "./form-elements";
 
 const FormBuilder = () => {
   const [formPublished, setFormPublished] = useState(false);
-
-  const { setElements } = useDesigner();
+  const [isReady, setIsReady] = useState(false);
+  const { setElements, setSelectedElement } = useDesigner();
 
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: {
@@ -33,6 +36,25 @@ const FormBuilder = () => {
   });
 
   const sensors = useSensors(mouseSensor, touchSensor);
+
+  useEffect(() => {
+    if (isReady) return;
+    const elements = formData as FormElementInstance[];
+    setElements(elements);
+    setSelectedElement(null);
+    const readyTimeout = setTimeout(() => setIsReady(true), 500);
+    return () => clearTimeout(readyTimeout);
+  }, [setElements, isReady, setSelectedElement]);
+
+  if (!isReady) {
+    return (
+      <main className="flex flex-col w-full h-screen">
+        <div className="flex flex-col items-center justify-center w-full h-full">
+          <ImSpinner2 className="animate-spin h-12 w-12" />
+        </div>
+      </main>
+    );
+  }
 
   return (
     <DndContext sensors={sensors}>
