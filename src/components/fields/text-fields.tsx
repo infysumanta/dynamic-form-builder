@@ -70,7 +70,7 @@ function DesignerComponent({
     elementInstance.extraAttributes as CustomInterface["extraAttributes"];
 
   return (
-    <div className="text-white dark:text-black w-full">
+    <div className="text-white w-full">
       <Label>
         {label}
         {required && <span className="text-red-500">*</span>}
@@ -92,7 +92,7 @@ function FormComponent({
     elementInstance.extraAttributes as CustomInterface["extraAttributes"];
 
   return (
-    <div className="text-white dark:text-black w-full">
+    <div className="text-whit w-full">
       <Label>
         {label}
         {required && <span className="text-red-500">*</span>}
