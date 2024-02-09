@@ -46,7 +46,7 @@ export const TextFieldFormElement: FormElement = {
     icon: MdTextFields,
   },
   designerComponent: DesignerComponent,
-  formComponent: () => <div>Form Component</div>,
+  formComponent: FormComponent,
   propertiesComponent: PropertiesComponent,
 };
 
@@ -76,6 +76,28 @@ function DesignerComponent({
         {required && <span className="text-red-500">*</span>}
       </Label>
       <Input readOnly disabled placeholder={placeholder} />
+      {helperText && (
+        <p className="text-muted-foreground text-[0.8rem]">{helperText}</p>
+      )}
+    </div>
+  );
+}
+
+function FormComponent({
+  elementInstance,
+}: {
+  elementInstance: FormElementInstance;
+}) {
+  const { label, helperText, required, placeholder } =
+    elementInstance.extraAttributes as CustomInterface["extraAttributes"];
+
+  return (
+    <div className="text-white dark:text-black w-full">
+      <Label>
+        {label}
+        {required && <span className="text-red-500">*</span>}
+      </Label>
+      <Input placeholder={placeholder} />
       {helperText && (
         <p className="text-muted-foreground text-[0.8rem]">{helperText}</p>
       )}

@@ -12,9 +12,12 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import DragOverlayWrappper from "./drag-overlay-wrappper";
+import useDesigner from "./hooks/useDesigner";
 
 const FormBuilder = () => {
   const [formPublished, setFormPublished] = useState(false);
+
+  const { setElements } = useDesigner();
 
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: {
@@ -49,8 +52,6 @@ const FormBuilder = () => {
             )}
           </div>
         </nav>
-        {/* height h-screen-60px */}
-
         <div
           className="flex w-full flex-grow items-center justify-center relative overflow-y-auto  bg-accent bg-[url(/paper.svg)] dark:bg-[url(/paper-dark.svg)]"
           style={{ height: "calc(100vh - 60px)" }}
