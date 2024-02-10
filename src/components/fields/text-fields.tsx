@@ -4,6 +4,7 @@ import {
   ElementType,
   FormElement,
   FormElementInstance,
+  SubmitFunction,
 } from "../form-elements";
 import { MdTextFields } from "react-icons/md";
 import { Label } from "../ui/label";
@@ -11,7 +12,7 @@ import { Input } from "../ui/input";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useDesigner from "../hooks/useDesigner";
 
 import {
@@ -24,6 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Switch } from "../ui/switch";
+import { cn } from "@/lib/utils";
 
 const type: ElementType = "TextField";
 
@@ -48,6 +50,16 @@ export const TextFieldFormElement: FormElement = {
   designerComponent: DesignerComponent,
   formComponent: FormComponent,
   propertiesComponent: PropertiesComponent,
+  validate: (
+    formElement: FormElementInstance,
+    currentValue: string,
+  ): boolean => {
+    const element = formElement as CustomInterface;
+    if (element.extraAttributes.required) {
+      return currentValue !== "";
+    }
+    return true;
+  },
 };
 
 type CustomInterface = FormElementInstance & {
@@ -85,21 +97,59 @@ function DesignerComponent({
 
 function FormComponent({
   elementInstance,
+  submitValue,
+  isInvalid,
+  defaultValue,
 }: {
   elementInstance: FormElementInstance;
+  submitValue: SubmitFunction;
+  isInvalid?: boolean;
+  defaultValue?: string;
 }) {
   const { label, helperText, required, placeholder } =
     elementInstance.extraAttributes as CustomInterface["extraAttributes"];
 
+  const [value, setValue] = useState(defaultValue || "");
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    setError(isInvalid === true);
+  }, [isInvalid]);
+
   return (
     <div className="text-whit w-full">
-      <Label>
+      <Label className={cn(error && "text-red-500")}>
         {label}
         {required && <span className="text-red-500">*</span>}
       </Label>
-      <Input placeholder={placeholder} />
+      <Input
+        className={cn(error && "border-red-500")}
+        placeholder={placeholder}
+        onChange={(e) => {
+          setValue(e.target.value);
+        }}
+        onBlur={(e) => {
+          if (!submitValue) return;
+          const valid = TextFieldFormElement.validate(
+            elementInstance,
+            e.target.value,
+          );
+          console.log(valid);
+          setError(!valid);
+          if (!valid) return;
+          submitValue(elementInstance.id, value);
+        }}
+        value={value}
+      />
       {helperText && (
-        <p className="text-muted-foreground text-[0.8rem]">{helperText}</p>
+        <p
+          className={cn(
+            "text-muted-foreground text-[0.8rem]",
+            error && "text-red-500",
+          )}
+        >
+          {helperText}
+        </p>
       )}
     </div>
   );

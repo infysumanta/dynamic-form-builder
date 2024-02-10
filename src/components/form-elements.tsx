@@ -3,6 +3,8 @@ import { TextFieldFormElement } from "./fields/text-fields";
 
 export type ElementType = "TextField";
 
+export type SubmitFunction = (key: string, value: string) => void;
+
 export type FormElement = {
   type: ElementType;
   construct: (id: string) => FormElementInstance;
@@ -17,10 +19,14 @@ export type FormElement = {
   }>;
   formComponent: React.FC<{
     elementInstance: FormElementInstance;
+    submitValue: (key: string, values: string) => void;
+    isInvalid?: boolean;
+    defaultValue?: string;
   }>;
   propertiesComponent: React.FC<{
     elementInstance: FormElementInstance;
   }>;
+  validate: (formElement: FormElementInstance, currentValue: string) => boolean;
 };
 
 export type FormElementInstance = {
